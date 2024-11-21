@@ -1,7 +1,7 @@
 # from flask import Flask, jsonify
 from flask import Flask, Response
 import json
-from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -31,11 +31,18 @@ def scrape_data():
     # Configure Selenium WebDriver
     options = Options()
     options.add_argument("--ignore-certificate-errors")
-    options.add_argument("--start-maximized")
+    # options.add_argument("--start-maximized")
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    print("ChromeDriver is ready!")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    try:
+        logging.info("Scraping started...")
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # print("ChromeDriver is ready!")
+    except Exception as e:
+        logging.error(f"Error occurred during scraping: {e}")
+    
     all_products = {}
     try:
         driver.get("https://www.iranicard.ir/card/giftcard/")
@@ -93,9 +100,9 @@ def scrape_data():
     return all_products
 
 # Schedule daily scraping
-scheduler = BackgroundScheduler()
-scheduler.add_job(scrape_data, 'cron', hour=11, minute=14, max_instances=1)  # Adjust time as needed
-scheduler.start()
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(scrape_data, 'cron', hour=11, minute=14, max_instances=1)  # Adjust time as needed
+# scheduler.start()
 
 
 @app.route('/api/products', methods=['GET'])
