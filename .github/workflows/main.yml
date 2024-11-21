@@ -1,42 +1,70 @@
-name: Run Flask and Selenium App
+name: Flask App Selenium Workflow
 
 on:
   push:
     branches:
-      - main  # می‌توانید شاخه دلخواه خود را مشخص کنید
-  workflow_dispatch:  # برای اجرای دستی
+      - main
+  pull_request:
 
 jobs:
-  run-app:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Python
+    # Set up Python
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'  # نسخه پایتون مورد نظر
+        python-version: '3.9'
 
+    # Install dependencies
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Install Chrome and ChromeDriver
+    # Install Chrome and WebDriver Manager dependencies
+    - name: Install Chrome and WebDriver Manager
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo apt install -y ./google-chrome-stable_current_amd64.deb
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-        wget -N https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/
-        rm chromedriver_linux64.zip
+        sudo apt-get install -y wget curl unzip
+        wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get -y install -f
+        pip install webdriver-manager
 
-    - name: Run the Flask App
+    # Install ngrok
+    - name: Install ngrok
       run: |
-        export PATH=$PATH:/usr/local/bin
-        python your_flask_app.py
+        sudo apt-get install unzip
+        wget https://bin.equinox.io/c/4VmDzA7iaJ8/ngrok-stable-linux-amd64.zip
+        unzip ngrok-stable-linux-amd64.zip
+        sudo mv ngrok /usr/local/bin/ngrok
+
+    # Run Flask app in the background
+    - name: Run Flask app
+      run: |
+        export FLASK_APP=app.py
+        export FLASK_ENV=development
+        nohup flask run --host=0.0.0.0 --port=5000 &
+
+    # Run ngrok to expose the Flask app to the internet
+    - name: Start ngrok
+      run: |
+        nohup ngrok http 5000 &
+
+    # Wait for ngrok to initialize
+    - name: Wait for ngrok to initialize
+      run: |
+        sleep 10  # Wait for ngrok to initialize and get the public URL
+
+    # Fetch the public ngrok URL
+    - name: Get ngrok URL
+      run: |
+        NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+        echo "ngrok public URL: $NGROK_URL"
+        echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
