@@ -26,7 +26,7 @@ app = Flask(__name__)
 all_products = {}
 
 def scrape_data():
-    print("Scraping started...")
+    # print("Scraping started...")
     global all_products
     # Configure Selenium WebDriver
     options = Options()
@@ -122,8 +122,8 @@ def get_products():
     return Response(response, content_type="application/json; charset=utf-8")
 if __name__ == "__main__":
     try:
-        scrape_data()
         logger.info("scrape_data() start doing some amazing thing for you!.")  # استفاده از logging
+        scrape_data()
     except Exception as e:
         logger.info("scrape_data() didn't start.")  # استفاده از logging
     scrape_data()
