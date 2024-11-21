@@ -102,5 +102,5 @@ def get_products():
     response = json.dumps(all_products, ensure_ascii=False, indent=4)
     return Response(response, content_type="application/json; charset=utf-8")
 if __name__ == "__main__":
-    # scrape_data()
+    scrape_data()
     app.run(debug=False)
