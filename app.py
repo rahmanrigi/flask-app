@@ -10,6 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import sys
+
+sys.stdout = sys.stderr
 
 app = Flask(__name__)
 
@@ -25,7 +28,7 @@ def scrape_data():
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
+    print("ChromeDriver is ready!")
     all_products = {}
     try:
         driver.get("https://www.iranicard.ir/card/giftcard/")
@@ -102,5 +105,9 @@ def get_products():
     response = json.dumps(all_products, ensure_ascii=False, indent=4)
     return Response(response, content_type="application/json; charset=utf-8")
 if __name__ == "__main__":
+    try:
+        scrape_data()
+    except Exception as e:
+        print(f"Error occurred: {e}")
     scrape_data()
     app.run(debug=False)
