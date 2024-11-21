@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 sys.stdout = sys.stderr
 
+
 app = Flask(__name__)
 
 all_products = {}
