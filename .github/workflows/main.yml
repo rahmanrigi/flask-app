@@ -1,71 +1,43 @@
-# فایل workflow برای نصب و راه‌اندازی ngrok
-
-name: Flask App Selenium Workflow
+name: Run Flask App with ngrok
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
-  deploy:
+  run_flask_with_ngrok:
     runs-on: ubuntu-latest
-
+    
     steps:
-    # Checkout repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # Install Chrome and WebDriver Manager dependencies
-    - name: Install Chrome and WebDriver Manager
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget curl unzip
-        wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt-get -y install -f
-        pip install webdriver-manager
+      - name: Download ngrok
+        run: |
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+          sudo mv ngrok /usr/local/bin/
 
-    # Install ngrok (with the correct link)
-    - name: Install ngrok
-      run: |
-        wget https://github.com/ngrok/ngrok/releases/download/v3.0.0/ngrok-stable-linux-amd64.zip
-        unzip ngrok-stable-linux-amd64.zip
-        sudo mv ngrok /usr/local/bin/ngrok
+      - name: Start ngrok
+        run: |
+          nohup ngrok http 5000 &
+          sleep 5 # wait for ngrok to initialize
 
-    # Run Flask app in the background
-    - name: Run Flask app
-      run: |
-        export FLASK_APP=app.py
-        export FLASK_ENV=development
-        nohup flask run --host=0.0.0.0 --port=5000 &
+      - name: Run Flask app
+        run: |
+          nohup flask run --host=0.0.0.0 --port=5000 &
 
-    # Run ngrok to expose the Flask app to the internet
-    - name: Start ngrok
-      run: |
-        nohup ngrok http 5000 &
-
-    # Wait for ngrok to initialize
-    - name: Wait for ngrok to initialize
-      run: |
-        sleep 10  # Wait for ngrok to initialize and get the public URL
-
-    # Fetch the public ngrok URL
-    - name: Get ngrok URL
-      run: |
-        NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-        echo "ngrok public URL: $NGROK_URL"
-        echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
+      - name: Get ngrok URL
+        run: |
+          curl --silent --show-error --fail http://localhost:4040/api/tunnels | jq '.tunnels[0].public_url'
