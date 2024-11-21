@@ -1,3 +1,5 @@
+# فایل workflow برای نصب و راه‌اندازی ngrok
+
 name: Flask App Selenium Workflow
 
 on:
@@ -37,11 +39,10 @@ jobs:
         sudo apt-get -y install -f
         pip install webdriver-manager
 
-    # Install ngrok
+    # Install ngrok (with the correct link)
     - name: Install ngrok
       run: |
-        sudo apt-get install unzip
-        wget https://bin.equinox.io/c/4VmDzA7iaJ8/ngrok-stable-linux-amd64.zip
+        wget https://github.com/ngrok/ngrok/releases/download/v3.0.0/ngrok-stable-linux-amd64.zip
         unzip ngrok-stable-linux-amd64.zip
         sudo mv ngrok /usr/local/bin/ngrok
 
