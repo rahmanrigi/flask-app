@@ -110,4 +110,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error occurred: {e}")
     scrape_data()
-    app.run(debug=False)
+    app.run(debug=True)
