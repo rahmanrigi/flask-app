@@ -11,6 +11,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import sys
+import logging
+
+
+# تنظیمات اولیه برای logging
+logging.basicConfig(level=logging.INFO)  # برای نمایش همه‌ی لاگ‌ها
+logger = logging.getLogger(__name__)
 
 sys.stdout = sys.stderr
 
@@ -99,15 +105,18 @@ def get_products():
     global all_products
     
     if not all_products:
+        logger.info("No data available yet.")  # استفاده از logging
         return Response(json.dumps({"error": "Data not available. Try later."}), 
                         content_type="application/json; charset=utf-8", 
                         status=503)
     response = json.dumps(all_products, ensure_ascii=False, indent=4)
+    logger.info("Data available.")  # استفاده از logging
     return Response(response, content_type="application/json; charset=utf-8")
 if __name__ == "__main__":
     try:
         scrape_data()
+        logger.info("scrape_data() start doing some amazing thing for you!.")  # استفاده از logging
     except Exception as e:
-        print(f"Error occurred: {e}")
+        logger.info("scrape_data() didn't start.")  # استفاده از logging
     scrape_data()
     app.run(debug=True)
