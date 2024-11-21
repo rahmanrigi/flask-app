@@ -1,0 +1,7 @@
+# Ignore virtual environment
+flax-vevn/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
