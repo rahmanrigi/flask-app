@@ -1,4 +1,4 @@
-name: Run Flask App with ngrok
+name: Run Scraper Script
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  run_flask_with_ngrok:
+  run_scraper_script:
     runs-on: ubuntu-latest
     
     steps:
@@ -23,21 +23,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Download ngrok
+      - name: Run Scraper script
         run: |
-          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-          unzip ngrok-stable-linux-amd64.zip
-          sudo mv ngrok /usr/local/bin/
-
-      - name: Start ngrok
-        run: |
-          nohup ngrok http 5000 &
-          sleep 5 # wait for ngrok to initialize
-
-      - name: Run Flask app
-        run: |
-          nohup flask run --host=0.0.0.0 --port=5000 &
-
-      - name: Get ngrok URL
-        run: |
-          curl --silent --show-error --fail http://localhost:4040/api/tunnels | jq '.tunnels[0].public_url'
+          nohup python app.py &  
