@@ -13,7 +13,7 @@ import pandas as pd
 options = Options()
 options.add_argument("--ignore-certificate-errors")  # نادیده گرفتن خطاهای SSL
 options.add_argument("--start-maximized")  # باز کردن مرورگر در حالت تمام صفحه
-# options.add_argument("--headless")  # اجرای مرورگر به صورت headless (بدون رابط گرافیکی)
+options.add_argument("--headless")  # اجرای مرورگر به صورت headless (بدون رابط گرافیکی)
 options.add_argument("--disable-gpu")  # غیرفعال کردن GPU برای سرعت بیشتر در حالت headless
 
 # راه‌اندازی Chrome driver با تنظیمات
