@@ -1,5 +1,5 @@
 # from flask import Flask, jsonify
-from flask import Flask, Response
+# from flask import Flask, Response
 import json
 # from apscheduler.schedulers.background import BackgroundScheduler
 from selenium import webdriver
@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-import sys
+# import sys
 import logging
 
 
@@ -18,10 +18,10 @@ import logging
 logging.basicConfig(level=logging.INFO)  # برای نمایش همه‌ی لاگ‌ها
 logger = logging.getLogger(__name__)
 
-sys.stdout = sys.stderr
+# sys.stdout = sys.stderr
 
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 all_products = {}
 
@@ -93,38 +93,40 @@ def scrape_data():
             time.sleep(1)
             products_brand_dropdown.click()
         
-        print("data scrape completed")
+        logging.info(f"Scraping Completed!{all_products}")
+        # print("data scrape completed")
     finally:
         driver.quit()
 
     return all_products
 
+scrape_data()
 # Schedule daily scraping
 # scheduler = BackgroundScheduler()
 # scheduler.add_job(scrape_data, 'cron', hour=11, minute=14, max_instances=1)  # Adjust time as needed
 # scheduler.start()
 
 
-@app.route('/api/products', methods=['GET'])
-def get_products():
-    # data = scrape_data()
-    # response = json.dumps(data, ensure_ascii=False, indent=4)
-    # return Response(response, content_type="application/json; charset=utf-8")
-    global all_products
+# @app.route('/api/products', methods=['GET'])
+# def get_products():
+#     # data = scrape_data()
+#     # response = json.dumps(data, ensure_ascii=False, indent=4)
+#     # return Response(response, content_type="application/json; charset=utf-8")
+#     global all_products
     
-    if not all_products:
-        logger.info("No data available yet.")  # استفاده از logging
-        return Response(json.dumps({"error": "Data not available. Try later."}), 
-                        content_type="application/json; charset=utf-8", 
-                        status=503)
-    response = json.dumps(all_products, ensure_ascii=False, indent=4)
-    logger.info("Data available.")  # استفاده از logging
-    return Response(response, content_type="application/json; charset=utf-8")
-if __name__ == "__main__":
-    try:
-        logger.info("scrape_data() start doing some amazing thing for you!.")  # استفاده از logging
-        scrape_data()
-    except Exception as e:
-        logger.info("scrape_data() didn't start.")  # استفاده از logging
-    scrape_data()
-    app.run(debug=True)
+#     if not all_products:
+#         logger.info("No data available yet.")  # استفاده از logging
+#         return Response(json.dumps({"error": "Data not available. Try later."}), 
+#                         content_type="application/json; charset=utf-8", 
+#                         status=503)
+#     response = json.dumps(all_products, ensure_ascii=False, indent=4)
+#     logger.info("Data available.")  # استفاده از logging
+#     return Response(response, content_type="application/json; charset=utf-8")
+# if __name__ == "__main__":
+#     try:
+#         logger.info("scrape_data() start doing some amazing thing for you!.")  # استفاده از logging
+#         scrape_data()
+#     except Exception as e:
+#         logger.info("scrape_data() didn't start.")  # استفاده از logging
+#     scrape_data()
+#     app.run(debug=True)
