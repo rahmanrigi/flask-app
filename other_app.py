@@ -22,7 +22,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',  # Custom log format
     handlers=[
         logging.StreamHandler(),  # Log to console
-        logging.FileHandler(log_file, mode='a', encoding='utf-8')  # Log to file (appending)
+       
     ]
 )
 
