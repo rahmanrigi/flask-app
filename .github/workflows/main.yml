@@ -25,4 +25,4 @@ jobs:
 
       - name: Run Scraper script
         run: |
-          nohup python app.py &  
+          nohup python other_app.py &  
