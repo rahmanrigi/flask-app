@@ -48,6 +48,7 @@ def scrape_data():
     all_products = {}
     try:
         driver.get("https://www.iranicard.ir/card/giftcard/")
+        logging.info("driver read url...")
         wait = WebDriverWait(driver, 10)
 
         products_brand_dropdown = driver.find_element(By.XPATH, "//*[@id='block-card-block_9ea71d6d4ffff7e694494e8f3cf11fda']/div/div/div/div/div[1]/div/div/a")
@@ -55,6 +56,7 @@ def scrape_data():
 
         categories_ul = driver.find_element(By.XPATH, "//*[@id='block-card-block_9ea71d6d4ffff7e694494e8f3cf11fda']/div/div/div/div/div[1]/div/div/div/ul")
         category_li = categories_ul.find_elements(By.TAG_NAME, "li")
+        logging.info("driver got categories...")
 
         for category in category_li:
             category_name = category.text.strip()
@@ -64,6 +66,7 @@ def scrape_data():
             category_a_tag = category.find_element(By.TAG_NAME, "a")
             try:
                 WebDriverWait(driver, 10).until(EC.element_to_be_clickable(category_a_tag)).click()
+                logging.info("clicked on a tag...")
                 time.sleep(2)
             except Exception:
                 continue
