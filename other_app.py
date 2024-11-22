@@ -8,7 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pprint
 import pandas as pd
-
+import logging
 # تنظیمات مرورگر
 options = Options()
 options.add_argument("--ignore-certificate-errors")  # نادیده گرفتن خطاهای SSL
@@ -16,10 +16,24 @@ options.add_argument("--start-maximized")  # باز کردن مرورگر در �
 options.add_argument("--headless")  # اجرای مرورگر به صورت headless (بدون رابط گرافیکی)
 options.add_argument("--disable-gpu")  # غیرفعال کردن GPU برای سرعت بیشتر در حالت headless
 
+
+logging.basicConfig(
+    level=logging.INFO,  # Logs everything at INFO level or higher
+    format='%(asctime)s - %(levelname)s - %(message)s',  # Custom log format
+    handlers=[
+        logging.StreamHandler(),  # Log to console
+        logging.FileHandler(log_file, mode='a', encoding='utf-8')  # Log to file (appending)
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+
 # راه‌اندازی Chrome driver با تنظیمات
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 try:
+    logging.info("Scraping started...")
     # باز کردن یک صفحه وب
     driver.get("https://www.iranicard.ir/card/giftcard/")  # آدرس وب‌سایت موردنظر خود را جایگزین کنید
 
@@ -118,7 +132,9 @@ try:
     df.to_excel("products_data.xlsx", index=False)
 
     print("Data has been written to 'products_data.xlsx'")
+    logging.info("Scraping completed...")
 
 finally:
+    logging.info("I dont know what should I do...")
     # بستن مرورگر
     driver.quit()
