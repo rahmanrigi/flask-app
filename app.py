@@ -13,13 +13,25 @@ import time
 # import sys
 import logging
 import pandas as pd
+import os
 
 
 
-# تنظیمات اولیه برای logging
-logging.basicConfig(level=logging.INFO)  # برای نمایش همه‌ی لاگ‌ها
+log_dir = 'logs'
+
+log_file = os.path.join(log_dir, 'scraping.log')
+
+# Set up logging to output both to console and to a file
+logging.basicConfig(
+    level=logging.INFO,  # Logs everything at INFO level or higher
+    format='%(asctime)s - %(levelname)s - %(message)s',  # Custom log format
+    handlers=[
+        logging.StreamHandler(),  # Log to console
+        logging.FileHandler(log_file, mode='a', encoding='utf-8')  # Log to file (appending)
+    ]
+)
+
 logger = logging.getLogger(__name__)
-
 # sys.stdout = sys.stderr
 
 
@@ -98,7 +110,7 @@ def scrape_data():
             time.sleep(1)
             products_brand_dropdown.click()
         
-        logging.info(f"Scraping Completed!{all_products}")
+        logging.info(f"Scraping completed! Found data for {len(all_products)} categories.")
         # print("data scrape completed")
     finally:
         driver.quit()
