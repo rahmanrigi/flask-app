@@ -12,6 +12,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 # import sys
 import logging
+import pandas as pd
+
 
 
 # تنظیمات اولیه برای logging
@@ -97,6 +99,13 @@ def scrape_data():
         # print("data scrape completed")
     finally:
         driver.quit()
+
+    try:
+        df = pd.DataFrame(all_products)
+        df.to_excel('scraped_data.xlsx', index=False, encoding='utf-8')
+        logging.info("Data saved to scraped_data.xlsx")
+    except Exception as e:
+        logging.error(f"Error saving data to Excel file: {e}")
 
     return all_products
 
